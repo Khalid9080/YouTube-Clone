@@ -142,11 +142,11 @@ const displayCategories = (categories) => {  // categories is a array, eita  par
 
 //for video
 
-const loadVideos = () => {
+const loadVideos = (searchText="") => {
   // console.log("Load Categories crsated");
 
   // fetch data--
-  fetch("https://openapi.programming-hero.com/api/phero-tube/videos")
+  fetch(`https://openapi.programming-hero.com/api/phero-tube/videos?title=${searchText}`)
     .then(res => res.json())
     .then(data => displayVideos(data.videos))
     .catch(error => console.log(error))
@@ -245,6 +245,9 @@ const displayVideos = (videos) => { // videos is a parameter and a parameter nam
   })
 
 }
+document.getElementById("search-input").addEventListener("keyup",(event)=>{
+  loadVideos(event.target.value);
+}) 
 
 loadCategories();
 loadVideos();
