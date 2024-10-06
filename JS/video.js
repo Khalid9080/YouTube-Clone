@@ -9,6 +9,30 @@
  * -> DisplayCategories() - data gulo dekhae dibe
  */
 
+// Second to hours and munite conversion
+function getTimeString(time) {
+  const hour = parseInt(time / 3600);
+  let remainderSecond = time % 3600;
+  const munite = parseInt(remainderSecond / 60)
+  remainderSecond = remainderSecond % 60;
+
+  return `${hour}h ${munite}m ${remainderSecond}s ago`
+}
+
+//loadCategorie Videos();
+const loadCategoryVideos=(id)=>{
+  alert(id);
+  fetch(` https://openapi.programming-hero.com/api/phero-tube/category/${id}`)
+  .then(res => res.json())
+  .then(data => displayVideos(data.category))
+  .catch(error => console.log(error))
+}
+
+
+
+
+
+
 //Creat LoadCatagories 
 
 //for button
@@ -22,7 +46,7 @@ const loadCategories = () => {
     // json() er vitor theke ekta object ashbe data oita contain kortese,
     // data.categories mane data object er vitor categories namer ekta array k return korbe.
 
-    .then(data => console.log(data))
+    .then(data => displayCategories(data.categories))
     .catch(error => console.log(error))
 }
 
@@ -55,14 +79,19 @@ const displayCategories = (categories) => {  // categories is a array, eita  par
   categories.forEach(item => { // item ekta parameter name, jeta catagories array er prottect object k bujhacche.
     console.log(item);
 
+
+
     // create a button
-    const button = document.createElement("button");
-    button.classList = "btn" // button er class set kora hoise
+    //const button = document.createElement("button");
+    //button.classList = "btn" // button er class set kora hoise
     // catagory hocche ekta object er property. eita catagories array er ekta object er property.
-    button.innerText = item.category;
+    //button.innerText = item.category;
+
+    const buttonContainer=document.createElement("div");
+    buttonContainer.innerHTML=`<button onclick="loadCategoryVideos(${item.category_id})" class="btn">${item.category}</button>`;
 
     //add button to category container
-    categoryContainer.appendChild(button);  // button gulo category container e add hobe
+    categoryContainer.appendChild(buttonContainer);  // button gulo category container e add hobe
   });
 }
 
@@ -79,6 +108,8 @@ const loadVideos = () => {
     .then(data => displayVideos(data.videos))
     .catch(error => console.log(error))
 }
+
+
 
 // Object --
 const cardDemo = {
@@ -106,6 +137,27 @@ const cardDemo = {
 const displayVideos = (videos) => { // videos is a parameter and a parameter name
   // console.log(videos);
   const videoContainer = document.getElementById("videos");
+  videoContainer.innerHTML = ""; // video container er moddhe jodi kono kisu thake tahole seta remove korbe
+
+   if(videos.length==0){
+    videoContainer.classList.remove("grid");  
+    videoContainer.innerHTML = `
+    <div class=" min-h-[300px] flex flex-col gap-5 justify-center items-center">
+    <img src="Assests/Icon.png" "/>
+
+    <h2 class="text-center text-xl font-bold">
+    No Content Here in this catwgory 
+    </h2>
+
+    </div>
+    `;
+    return
+   }
+
+   else{
+    videoContainer.classList.add("grid");  
+   }
+
 
 
   videos.forEach((video) => {
@@ -119,7 +171,10 @@ const displayVideos = (videos) => { // videos is a parameter and a parameter nam
       src=${video.thumbnail}
       class="w-full h-full object-cover"
       alt="Shoes" />
-      <span class="absolute right-2 bottom-2 bg-black rounded p-1 text-white">${video.others.posted_date}</span>
+  
+      ${video.others.posted_date?.length == 0 /* jeshokol posted date er length 0/true ase oder empty string dekhabe, : nahole string dekhabe*/
+        ? " " : `<span class="absolute text-xs right-2 bottom-2 bg-black rounded p-1 text-white">${ getTimeString(video.others.posted_date)}</span>`}
+      
   </figure>
   <div class="px-0 py-2 flex gap-2">
     <div>
