@@ -21,13 +21,55 @@ function getTimeString(time) {
 
 //loadCategorie Videos();
 const loadCategoryVideos=(id)=>{
-  alert(id);
+  //alert(id);
   fetch(` https://openapi.programming-hero.com/api/phero-tube/category/${id}`)
   .then(res => res.json())
-  .then(data => displayVideos(data.category))
+  .then(data => {displayVideos(data.category)
+    //Shobaike active class remove kore dibe
+    removeActiveClass();
+
+    //id er class k active koro
+    const activeBtn=document.getElementById(`btn-${id}`);
+    activeBtn.classList.add("active");
+  })
   .catch(error => console.log(error))
 }
 
+//button section function
+const removeActiveClass=()=>{
+  const buttons = document.getElementsByClassName("category-btn");
+  //console.log(buttons);
+
+  for(let btn of buttons){
+    btn.classList.remove("active");
+  }
+}
+
+
+// Details button click korle Details page e jabe
+const loadDetails= async (videoId)=>{
+  console.log(videoId);
+  const uri =`https://openapi.programming-hero.com/api/phero-tube/video/${videoId}`
+  const res = await fetch(uri);
+  const data = await res.json();
+  //console.log(data);
+  displayDetails(data.video);
+}
+
+const displayDetails=(video)=>{
+  console.log(video);
+  const detailsContainer=document.getElementById("modal-content");
+  detailsContainer.innerHTML=`
+        <img src=${video.thumbnail} class="w-full h-[300px] object-cover"/>
+         <p>${video.description} </p>
+        `
+  //way-1
+
+  //document.getElementById("showModalData").click();
+
+  //way-2
+  document.getElementById("customModal").showModal();
+}
 
 
 
@@ -88,7 +130,8 @@ const displayCategories = (categories) => {  // categories is a array, eita  par
     //button.innerText = item.category;
 
     const buttonContainer=document.createElement("div");
-    buttonContainer.innerHTML=`<button onclick="loadCategoryVideos(${item.category_id})" class="btn">${item.category}</button>`;
+    buttonContainer.innerHTML=`<button id="btn-${item.category_id}" 
+                    onclick="loadCategoryVideos(${item.category_id})" class="btn category-btn">${item.category}</button>`;
 
     //add button to category container
     categoryContainer.appendChild(buttonContainer);  // button gulo category container e add hobe
@@ -193,10 +236,12 @@ const displayVideos = (videos) => { // videos is a parameter and a parameter nam
          
         </div>
         
-        <p></p>
+        <p> <button onclick="loadDetails('${video.video_id}')" 
+              class="btn btn-sm btn-error">Details</button> 
+        </p>
     </div>
   </div>`;
-    videoContainer.appendChild(card);
+    videoContainer.append(card);
   })
 
 }
